@@ -1,0 +1,20 @@
+c:\documents and settings\msushil\my documents\visual studio 2010\Projects\DataAccess\DataAccess\bin\Debug\DataAccess.dll
+c:\documents and settings\msushil\my documents\visual studio 2010\Projects\DataAccess\DataAccess\bin\Debug\DataAccess.pdb
+c:\documents and settings\msushil\my documents\visual studio 2010\Projects\DataAccess\DataAccess\obj\Debug\ResolveAssemblyReference.cache
+c:\documents and settings\msushil\my documents\visual studio 2010\Projects\DataAccess\DataAccess\obj\Debug\DataAccess.dll
+c:\documents and settings\msushil\my documents\visual studio 2010\Projects\DataAccess\DataAccess\obj\Debug\DataAccess.pdb
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\obj\Debug\ResolveAssemblyReference.cache
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\obj\Debug\DataAccess.dll
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\obj\Debug\DataAccess.pdb
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\bin\Debug\DataAccess.dll
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\bin\Debug\DataAccess.pdb
+C:\projectsroot\trunk\components\mysql-dataaccess\DataAccess\DataAccess\obj\Debug\ResolveAssemblyReference.cache
+C:\projectsroot\trunk\components\mysql-dataaccess\DataAccess\DataAccess\obj\Debug\DataAccess.dll
+C:\projectsroot\trunk\components\mysql-dataaccess\DataAccess\DataAccess\obj\Debug\DataAccess.pdb
+C:\projectsroot\trunk\components\mysql-dataaccess\DataAccess\DataAccess\bin\Debug\DataAccess.dll
+C:\projectsroot\trunk\components\mysql-dataaccess\DataAccess\DataAccess\bin\Debug\DataAccess.pdb
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DataAccess\bin\Debug\DataAccess.dll
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DataAccess\bin\Debug\DataAccess.pdb
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DataAccess\obj\Debug\DataAccess.csprojResolveAssemblyReference.cache
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DataAccess\obj\Debug\DataAccess.dll
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DataAccess\obj\Debug\DataAccess.pdb

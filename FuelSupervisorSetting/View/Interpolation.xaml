@@ -1,0 +1,117 @@
+﻿<UserControl x:Class="FuelSupervisorSetting.View.Interpolation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"                 
+             xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:FuelSupervisorSetting.ViewModel"
+             xmlns:mod="clr-namespace:FuelSupervisorSetting.Model"
+             x:Name="uc"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <!-- create an instance of our DataProvider class -->
+        <ObjectDataProvider x:Key="StationListDataProvider" ObjectType="{x:Type local:StationListDataProvider}"/>
+        <!-- define the method which is invoked to obtain our data -->
+        <ObjectDataProvider 
+            x:Key="StationList" 
+            ObjectType="{x:Type local:StationListDataProvider}" 
+            MethodName="GetStationList">
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="TankListDataProvider" ObjectType="{x:Type local:TankListDataProvider}"/>
+
+        <ObjectDataProvider 
+            x:Key="TankList" 
+            ObjectType="{x:Type local:TankListDataProvider}" 
+            MethodName="GetTankList">
+            <ObjectDataProvider.MethodParameters>
+                <sys:Int64>0</sys:Int64>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <!-- create an instance of our DataProvider class -->
+        <ObjectDataProvider x:Key="InterpolationTabDataProvider" ObjectType="{x:Type local:InterpolationTabDataProvider}"/>
+        <!-- define the method which is invoked to obtain our data -->
+        <ObjectDataProvider 
+            x:Key="LoadInterpolationTab" 
+            ObjectType="{x:Type local:InterpolationTabDataProvider}" 
+            MethodName="GetInterpolationTab">
+            <ObjectDataProvider.MethodParameters>
+                <sys:Int64>0</sys:Int64>
+
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider 
+            x:Key="ImportIntoTab" 
+            ObjectType="{x:Type local:InterpolationTabDataProvider}" 
+            MethodName="ImportInterpolationTab">
+            <ObjectDataProvider.MethodParameters>
+                <sys:Int64>0</sys:Int64>
+                <x:Static Member="sys:String.Empty" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <mod:SelValueConverter x:Key="selectedvalueconv" />
+        <!--<mod:NameList x:Key="NameListData"/>-->
+    </UserControl.Resources>
+    <Grid>
+        <DockPanel>
+            <Grid DockPanel.Dock="Top">
+                <Label Content="Chọn Trạm:" HorizontalAlignment="Left" Margin="31,34,0,0" VerticalAlignment="Top"/>
+                <ComboBox  ItemsSource="{Binding Source={StaticResource StationList}}"
+                  DisplayMemberPath="StationName"
+                  SelectedValuePath="StationId"
+                  HorizontalAlignment="Left" Margin="130,34,0,0" VerticalAlignment="Top" Width="138"
+                           >
+                    <ComboBox.SelectedValue>
+                        <Binding Source="{StaticResource TankList}"
+                                 Path="MethodParameters[0]"
+                                 BindsDirectlyToSource="true" Mode="OneWayToSource" />
+                    </ComboBox.SelectedValue>
+                </ComboBox>
+                <Label Content="Chọn Bồn:" HorizontalAlignment="Left" Margin="31,65,0,0" VerticalAlignment="Top"/>
+                <ComboBox Name="cbSelTank" ItemsSource="{Binding Source={StaticResource TankList}}"
+                  DisplayMemberPath="TankName"
+                  SelectedValuePath="TankId"                  
+                  HorizontalAlignment="Left" Margin="130,69,0,0" VerticalAlignment="Top" Width="138" SelectionChanged="cbSelTank_SelectionChanged">
+                    <ComboBox.SelectedValue>
+                        <!--<Binding Source="{StaticResource LoadInterpolationTab}"
+                                 Path="MethodParameters[0]"
+                                 BindsDirectlyToSource="true" Mode="OneWayToSource" />-->
+                        <MultiBinding Converter="{StaticResource selectedvalueconv}">                        
+                            <Binding Source="{StaticResource LoadInterpolationTab}"
+                                 Path="MethodParameters[0]"
+                                 BindsDirectlyToSource="true" Mode="OneWayToSource" />
+                            <Binding Source="{StaticResource ImportIntoTab}"
+                                 Path="MethodParameters[0]"
+                                 BindsDirectlyToSource="true" Mode="OneWayToSource" />
+                        </MultiBinding>
+                        <!--Converter ="{StaticResource conv}"-->
+                    </ComboBox.SelectedValue>
+                    <!--SelectedValue="{Binding SelectedTankId,Mode=OneWayToSource}"-->
+                </ComboBox>
+
+                <Button Name="btnImport" Content="Browse..." HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" 
+                        RenderTransformOrigin="3.286,-9.455" Height="57" Margin="291,34,0,0" Click="btnImport_Click" IsEnabled="False"
+                        />
+                
+            </Grid>
+            <dg:DataGrid DockPanel.Dock="Top" 
+                         x:Name="InterpolationGrid" ItemsSource="{Binding  Source={StaticResource LoadInterpolationTab}}"            
+                         HorizontalAlignment="Left" Margin="31,20,0,20" VerticalAlignment="Stretch"  MinHeight="170" Width="334"            
+                         AutoGenerateColumns="False" >
+
+                <dg:DataGrid.Columns>
+                    <!--<dg:DataGridTextColumn x:Name="IDColumn" Header="PK" Width="63" Binding="{Binding PK}" IsReadOnly="True" />-->
+                    <dg:DataGridTextColumn Header="Level" Width="*" Binding="{Binding Path=Level}" IsReadOnly="false" />
+                    <dg:DataGridTextColumn Header="Capacity" Width="*" Binding="{Binding Path=Capacity}" IsReadOnly="false" />
+
+                </dg:DataGrid.Columns>
+
+            </dg:DataGrid>
+        </DockPanel>
+
+    </Grid>
+</UserControl>

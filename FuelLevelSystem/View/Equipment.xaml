@@ -1,0 +1,45 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:converter="clr-namespace:FuelLevelSystem.View"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="FuelLevelSystem.View.Equipment"
+	x:Name="me"  >
+
+    <Grid Margin="5" DataContext="{Binding ElementName=me}">
+        <Rectangle x:Name="backgroundRect" Fill="White" Stroke="Blue" StrokeThickness="2" RadiusX="5" RadiusY="5" />
+        <DockPanel LastChildFill="True" Margin="5">
+            <Grid Margin="3" DockPanel.Dock="Left">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <Label Content="{Binding Max, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="2,2,0,2" VerticalContentAlignment="Top" HorizontalContentAlignment="Right" />
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                    <Label Content="{Binding Min, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="2,2,0,2" VerticalContentAlignment="Bottom" HorizontalContentAlignment="Right" />
+                </StackPanel>
+            </Grid>
+            <Border CornerRadius="3" BorderBrush="Blue" Background="White" BorderThickness="1" Margin="3">
+                <Viewbox Stretch="Fill">
+                    <StackPanel Orientation="Horizontal">
+                        <Rectangle Fill="Red" Height="1" Width="0" />
+                        <Grid VerticalAlignment="Bottom" 
+                              >
+                            <Rectangle Fill="DarkCyan" Width="1" VerticalAlignment="Bottom" Height="{Binding ScaledValue}" Grid.ZIndex ="1">
+                                <!--<Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" >
+                                        <GradientStop Color="Cyan" Offset="0" />
+                                        <GradientStop Color="Red" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>-->
+                            </Rectangle> 
+                            <Rectangle Fill="Red"  Width="1" VerticalAlignment="Bottom" Height="{Binding ScaledWaterValue}" Grid.ZIndex="2" />
+
+                        </Grid>
+                        
+                    </StackPanel>
+                </Viewbox>
+                
+            </Border>
+        </DockPanel>
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,5 @@
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DALC4NET\bin\Debug\DALC4NET.dll
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DALC4NET\bin\Debug\DALC4NET.pdb
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DALC4NET\obj\Debug\DALC4NET.csprojResolveAssemblyReference.cache
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DALC4NET\obj\Debug\DALC4NET.dll
+D:\vnarmy\Documents\Visual Studio 2012\Projects\FuelLevelSystem\DALC4NET\obj\Debug\DALC4NET.pdb

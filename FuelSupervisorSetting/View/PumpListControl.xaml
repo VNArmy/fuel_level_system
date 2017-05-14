@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="FuelSupervisorSetting.View.PumpListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
+             xmlns:local="clr-namespace:FuelSupervisorSetting.ViewModel"             
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             x:Name="ucPumpList"
+             mc:Ignorable="d"
+             
+             d:DesignHeight="600" d:DesignWidth="600">
+    <UserControl.Resources>
+
+        <!-- create an instance of our DataProvider class -->
+        <ObjectDataProvider x:Key="StationListDataProvider" ObjectType="{x:Type local:StationListDataProvider}"/>
+        <!-- define the method which is invoked to obtain our data -->
+        <ObjectDataProvider 
+            x:Key="StationList" 
+            ObjectType="{x:Type local:StationListDataProvider}" 
+            MethodName="GetStationList">
+        </ObjectDataProvider>
+        
+        <ObjectDataProvider x:Key="TankListDataProvider" ObjectType="{x:Type local:TankListDataProvider}"/>
+
+        <ObjectDataProvider 
+            x:Key="TankList" 
+            ObjectType="{x:Type local:TankListDataProvider}" 
+            MethodName="GetTankList">
+            <ObjectDataProvider.MethodParameters>
+                <sys:Int64>0</sys:Int64>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        
+        <ObjectDataProvider x:Key="PumpListDataProvider" ObjectType="{x:Type local:PumpListDataProvider}"/>
+        
+        <ObjectDataProvider 
+            x:Key="PumpList" 
+            ObjectType="{x:Type local:PumpListDataProvider}" 
+            MethodName="GetPumpList">
+            <ObjectDataProvider.MethodParameters>
+                <sys:Int64>0</sys:Int64>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <local:MultiInt64Converter x:Key="conv" />
+        <!--<local:ViewModelPumpList x:Key="vmPumpList"></local:ViewModelPumpList>-->
+    </UserControl.Resources>
+    <Grid>
+        <Label Content="Chọn Trạm:" HorizontalAlignment="Left" Margin="31,34,0,0" VerticalAlignment="Top"/>
+        <ComboBox ItemsSource="{Binding Source={StaticResource StationList}}"
+                  DisplayMemberPath="StationName"
+                  SelectedValuePath="StationId"
+                  HorizontalAlignment="Left" Margin="130,34,0,0" VerticalAlignment="Top" Width="225">
+            <ComboBox.SelectedValue>
+                <MultiBinding Converter="{StaticResource conv}" Mode="OneWayToSource" >
+                    <Binding Source="{StaticResource TankList}"
+                         Path="MethodParameters[0]"
+                         BindsDirectlyToSource="True"
+                         Mode="OneWayToSource" />
+                    <Binding Source="{StaticResource PumpList}"
+                         Path="MethodParameters[0]"
+                         BindsDirectlyToSource="True"
+                         Mode="OneWayToSource" />
+                </MultiBinding>
+                    <!--<Binding Source="{StaticResource PumpList}" Path="MethodParameters[0]" BindsDirectlyToSource="true" Mode="OneWayToSource" />-->
+
+            </ComboBox.SelectedValue>
+        </ComboBox>
+
+
+        <DataGrid x:Name="dgPumpListGrid"
+            ItemsSource="{Binding Source={StaticResource PumpList}}"                     
+            AutoGenerateColumns="False" HorizontalAlignment="Left" Margin="35,113,0,0" VerticalAlignment="Top" Height="377" Width="511">
+            
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="IDColumn" Header="ID" Width="63" Binding="{Binding Path=PumpId,Mode=OneWay}" IsReadOnly="True" />
+                <DataGridComboBoxColumn Header="Tank" Width="*"
+                                           ItemsSource="{Binding Source={StaticResource TankList}}"
+                                           DisplayMemberPath="TankDesc"                                             
+                                           SelectedValuePath="TankId"                                      
+                                           SelectedValueBinding="{Binding Path=TankId,Mode=TwoWay}"
+                                           ></DataGridComboBoxColumn>
+
+                <DataGridTextColumn Header="PumpName" Width="*" Binding="{Binding Path= PumpName}" IsReadOnly="false" />
+                <DataGridTextColumn Header="Mô tả" Width="*" Binding="{Binding Path=PumpDesc}" IsReadOnly="false" />
+                <DataGridTextColumn Header="IP" Width="*" Binding="{Binding Path=PumpIpAddress}"  IsReadOnly="false" />
+                <DataGridTextColumn Header="Port" Width="*" Binding="{Binding Path=PumpPort}"  IsReadOnly="false" />
+                <DataGridTextColumn Header="DelayTime" Width="*" Binding="{Binding Path=PumpDelayTime}"  IsReadOnly="false" />
+                <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Path=PumpStatus}"  IsReadOnly="false" />
+                <DataGridTextColumn Header="PickUp" Width="*" Binding="{Binding Path=PumpPickUp}"  IsReadOnly="True" />
+                    
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</UserControl>

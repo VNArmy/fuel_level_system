@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="FuelSupervisorSetting.View.TankListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dg="http://schemas.microsoft.com/wpf/2008/toolkit"
+             xmlns:local="clr-namespace:FuelSupervisorSetting.ViewModel"             
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             x:Name="ucTankList"
+             mc:Ignorable="d"
+             
+             d:DesignHeight="600" d:DesignWidth="600">
+    <UserControl.Resources>
+
+        <!-- create an instance of our DataProvider class -->
+        <ObjectDataProvider x:Key="StaionListDataProvider" ObjectType="{x:Type local:StationListDataProvider}"/>
+        <!-- define the method which is invoked to obtain our data -->
+        <ObjectDataProvider 
+            x:Key="StationList" 
+            ObjectType="{x:Type local:StationListDataProvider}" 
+            MethodName="GetStationList">
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="TankListDataProvider" ObjectType="{x:Type local:TankListDataProvider}"/>
+        
+        <ObjectDataProvider 
+            x:Key="TankList" 
+            ObjectType="{x:Type local:TankListDataProvider}" 
+            MethodName="GetTankList">
+            <ObjectDataProvider.MethodParameters>
+                <sys:Int64>0</sys:Int64>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <!--<local:UInt64Converter x:Key="conv" />-->
+        <!--<local:ViewModelTankList x:Key="vmTankList"></local:ViewModelTankList>-->
+    </UserControl.Resources>
+    <Grid>
+        <Label Content="Chọn Trạm:" HorizontalAlignment="Left" Margin="31,34,0,0" VerticalAlignment="Top"/>
+        <ComboBox ItemsSource="{Binding Source={StaticResource StationList}}"
+                  DisplayMemberPath="StationName"
+                  SelectedValuePath="StationId"
+                  HorizontalAlignment="Left" Margin="130,34,0,0" VerticalAlignment="Top" Width="225">
+            <ComboBox.SelectedValue>
+                <Binding Source="{StaticResource TankList}"
+                 Path="MethodParameters[0]"
+                 BindsDirectlyToSource="true" Mode="OneWayToSource" />
+                <!--Converter ="{StaticResource conv}"-->
+            </ComboBox.SelectedValue>
+        </ComboBox>
+
+
+        <DataGrid x:Name="dgTankListGrid"
+            ItemsSource="{Binding Source={StaticResource TankList}}"                     
+            AutoGenerateColumns="False" HorizontalAlignment="Left" Margin="35,113,0,0" VerticalAlignment="Top" Height="377" Width="511">
+            <DataGrid.Resources>
+                <CollectionViewSource x:Key="ListFuel" Source="{Binding DataContext.ListFuel, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"/>                
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="IDColumn" Header="ID" Width="63" Binding="{Binding Path=TankId,Mode=OneWay}" IsReadOnly="True" />
+                <DataGridTextColumn Header="TankName" Width="*" Binding="{Binding Path= TankName}" IsReadOnly="false" />
+                <DataGridTextColumn Header="Mô tả" Width="*" Binding="{Binding Path=TankDesc}" IsReadOnly="false" />
+                <DataGridTextColumn Header="Dung tích" Width="*" Binding="{Binding Path=Max}"  IsReadOnly="false" />
+                <DataGridTextColumn Header="Offset" Width="*" Binding="{Binding Path=Offset}"  IsReadOnly="false" />
+                <DataGridComboBoxColumn Header="Nhiên liệu" Width="*"
+                                           ItemsSource="{Binding Source={StaticResource ListFuel}}"
+                                           DisplayMemberPath="FuelDesc"                                             
+                                           SelectedValuePath="FuelId"                                      
+                                           SelectedValueBinding="{Binding Path=FuelId,Mode=TwoWay}"
+                                           >
+                    
+                </DataGridComboBoxColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</UserControl>

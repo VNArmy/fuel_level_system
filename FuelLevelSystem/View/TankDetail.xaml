@@ -1,0 +1,36 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    
+        xmlns:DTPicker="clr-namespace:DTPicker" x:Class="FuelLevelSystem.View.TankDetail"
+        Title="TankDetail" Height="600" Width="600">
+    <Grid>
+        <Label Content="{Binding Description}" HorizontalAlignment="Left" Margin="42,21,0,0" VerticalAlignment="Top" Width="506"/>
+
+        <DTPicker:DateTimePicker 
+            SelectedDate="{Binding CurrentTankDetails.FromDate, Mode=TwoWay, NotifyOnTargetUpdated=True}" 
+            HorizontalAlignment="Left" Margin="42,58,0,0" VerticalAlignment="Top"/>
+        <DTPicker:DateTimePicker SelectedDate="{Binding CurrentTankDetails.ToDate, Mode=TwoWay, NotifyOnTargetUpdated=True}" HorizontalAlignment="Left" Margin="237,58,0,0" VerticalAlignment="Top"/>
+        
+        <!--<DatePicker SelectedDate="{Binding CurrentTankDetails.FromDate, Mode=TwoWay, NotifyOnTargetUpdated=True}" HorizontalAlignment="Left" Margin="42,58,0,0" VerticalAlignment="Top"/>
+        <DatePicker SelectedDate="{Binding CurrentTankDetails.ToDate, Mode=TwoWay, NotifyOnTargetUpdated=True}" HorizontalAlignment="Left" Margin="237,58,0,0" VerticalAlignment="Top"/>-->
+        <Button Command="{Binding SearchCommand}" Content="Tìm Kiếm" HorizontalAlignment="Left" Margin="473,58,0,0" VerticalAlignment="Top" Width="75"/>
+        <toolkit:DataGrid x:Name="dgTankDetail" ItemsSource="{Binding Results}" AutoGenerateColumns="False"  HorizontalAlignment="Left" Margin="42,89,0,0" VerticalAlignment="Top" Height="441" Width="506">
+            <toolkit:DataGrid.Columns>
+                <toolkit:DataGridTextColumn Header="Thời gian" Width="63" Binding="{Binding Savedtime}" IsReadOnly="True" />
+                <toolkit:DataGridTextColumn Header="Nhiên liệu" Width="*" Binding="{Binding Capacity,StringFormat=F1}" IsReadOnly="True" />
+                <toolkit:DataGridTextColumn Header="Nước" Width="*" Binding="{Binding WaterCapacity,StringFormat=F1}" IsReadOnly="True" />
+                <toolkit:DataGridTextColumn Header="Nhiệt độ" Width="*" Binding="{Binding Thermo}" IsReadOnly="True" />
+                <toolkit:DataGridTextColumn Header="Trạng thái" Width="*" Binding="{Binding Status}" IsReadOnly="True" />
+                
+            </toolkit:DataGrid.Columns>
+            <toolkit:DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Details}" Margin="10" />
+                </DataTemplate>
+            </toolkit:DataGrid.RowDetailsTemplate>
+        </toolkit:DataGrid>
+    </Grid>
+</Window>

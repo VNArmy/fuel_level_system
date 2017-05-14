@@ -1,0 +1,10 @@
+C:\Documents and Settings\msushil\My Documents\Visual Studio 2010\Projects\DataAccess\DataAccess\obj\Release\ResolveAssemblyReference.cache
+C:\Documents and Settings\msushil\My Documents\Visual Studio 2010\Projects\DataAccess\DataAccess\bin\Release\DataAccess.dll
+C:\Documents and Settings\msushil\My Documents\Visual Studio 2010\Projects\DataAccess\DataAccess\bin\Release\DataAccess.pdb
+C:\Documents and Settings\msushil\My Documents\Visual Studio 2010\Projects\DataAccess\DataAccess\obj\Release\DataAccess.dll
+C:\Documents and Settings\msushil\My Documents\Visual Studio 2010\Projects\DataAccess\DataAccess\obj\Release\DataAccess.pdb
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\obj\Release\ResolveAssemblyReference.cache
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\obj\Release\DataAccess.dll
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\obj\Release\DataAccess.pdb
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\bin\Release\DataAccess.dll
+C:\SVNMySqlDataAccess\DataAccess\DataAccess\bin\Release\DataAccess.pdb
