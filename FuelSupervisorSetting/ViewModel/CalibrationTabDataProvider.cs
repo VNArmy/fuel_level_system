@@ -3,56 +3,54 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace FuelSupervisorSetting.ViewModel
 {
-    public delegate void PersistenceErrorHandler(InterpolationTabDataProvider dataProvider, Exception e);
+    public delegate void CalibrationPersistenceErrorHandler(CalibrationTabDataProvider dataProvider, Exception e);
 
-    public class InterpolationTabDataProvider
+    public class CalibrationTabDataProvider
     {
-        IInterpolationTabDAL dataAccessLayer;
+        ICalibrationTabDAL dataAccessLayer;
         long currTankId;
-        public InterpolationTabDataProvider()
+        public CalibrationTabDataProvider()
         {
-            dataAccessLayer = new InterpolationTabDAL();
+            dataAccessLayer = new CalibrationTabDAL();
         }
 
-        public InterpolationTabUIObjects GetInterpolationTab(long tankid)
+        public CalibrationTabUIObjects GetCalibrationTab(long tankid)
         {
             //if (!(String.IsNullOrEmpty(fileName)))
             //{
-            //     dataAccessLayer.ImportInterpolationTab(fileName, pumpid);
+            //     dataAccessLayer.ImportCalibrationTab(fileName, pumpid);
             //}
             currTankId = tankid;
             // populate our list of customers from the data access layer
-            InterpolationTabUIObjects iTabObjs = new InterpolationTabUIObjects();
+            CalibrationTabUIObjects iTabObjs = new CalibrationTabUIObjects();
 
-            List<InterpolationRecord> iTabDataObjects = dataAccessLayer.GetInterpolationTab(tankid);
-            foreach (InterpolationRecord iTabDataObject in iTabDataObjects)
+            List<CalibrationRecord> iTabDataObjects = dataAccessLayer.GetCalibrationTab(tankid);
+            foreach (CalibrationRecord iTabDataObject in iTabDataObjects)
             {
                 // create a business object from each data object
-                iTabObjs.Add(new InterpolationTabUIObject(iTabDataObject));
+                iTabObjs.Add(new CalibrationTabUIObject(iTabDataObject));
             }
 
-            iTabObjs.ItemEndEdit += new ItemEndEditEventHandler(InterpolationTabItemEndEdit);
-            iTabObjs.CollectionChanged += new NotifyCollectionChangedEventHandler(InterpolationTabCollectionChanged);
+            iTabObjs.ItemEndEdit += new CalibrationItemEndEditEventHandler(CalibrationTabItemEndEdit);
+            iTabObjs.CollectionChanged += new NotifyCollectionChangedEventHandler(CalibrationTabCollectionChanged);
 
             return iTabObjs;
         }
-        public InterpolationTabUIObjects ImportInterpolationTab(long tankid, String fileName)
+        public CalibrationTabUIObjects ImportCalibrationTab(long tankid, String fileName)
         {
             if ((String.IsNullOrEmpty(fileName))) return null;
             try
             {
-                
-                dataAccessLayer.ImportInterpolationTab(fileName, tankid);
 
-                return GetInterpolationTab(tankid);
+                dataAccessLayer.ImportCalibrationTab(fileName, tankid);
+
+                return GetCalibrationTab(tankid);
             }
             catch (Exception ex)
             {
@@ -62,19 +60,19 @@ namespace FuelSupervisorSetting.ViewModel
 
         }
 
-        void InterpolationTabCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        void CalibrationTabCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 try
                 {
-                    
+
                     foreach (object item in e.OldItems)
                     {
-                        InterpolationTabUIObject iTabObject = item as InterpolationTabUIObject;
+                        CalibrationTabUIObject iTabObject = item as CalibrationTabUIObject;
 
                         // use the data access layer to delete the wrapped data object
-                        dataAccessLayer.DeleteInterpolationTab(iTabObject.GetDataObject());
+                        dataAccessLayer.DeleteCalibrationTab(iTabObject.GetDataObject());
                     }
                 }
                 catch (Exception ex)
@@ -89,9 +87,9 @@ namespace FuelSupervisorSetting.ViewModel
             }
         }
 
-        void InterpolationTabItemEndEdit(IEditableObject sender)
+        void CalibrationTabItemEndEdit(IEditableObject sender)
         {
-            InterpolationTabUIObject iTabObject = sender as InterpolationTabUIObject;
+            CalibrationTabUIObject iTabObject = sender as CalibrationTabUIObject;
 
             try
             {
@@ -100,7 +98,7 @@ namespace FuelSupervisorSetting.ViewModel
                     iTabObject.TankId = currTankId;
                 }
                 // use the data access layer to update the wrapped data object
-                dataAccessLayer.UpdateInterpolationTab(iTabObject.GetDataObject());
+                dataAccessLayer.UpdateCalibrationTab(iTabObject.GetDataObject());
             }
             catch (Exception ex)
             {
@@ -113,7 +111,7 @@ namespace FuelSupervisorSetting.ViewModel
             }
         }
 
-        public static event PersistenceErrorHandler PersistenceError;
+        public static event CalibrationPersistenceErrorHandler PersistenceError;
     }
 
 }

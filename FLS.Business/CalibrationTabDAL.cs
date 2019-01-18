@@ -9,55 +9,55 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace FLS.Business
 {
-    public interface IInterpolationTabDAL
+    public interface ICalibrationTabDAL
     {
         /// <summary>
         /// Return all the persistent customers
         /// </summary>
-        List<InterpolationRecord> GetInterpolationTab(long tankid);
+        List<CalibrationRecord> GetCalibrationTab(long tankid);
 
 
-        void ImportInterpolationTab(String fileName, long tankid);
+        void ImportCalibrationTab(String fileName, long tankid);
 
         /// <summary>
         /// Updates or adds the given customer
         /// </summary>
-        void UpdateInterpolationTab(InterpolationRecord record);
+        void UpdateCalibrationTab(CalibrationRecord record);
 
         /// <summary>
         /// Delete the given customer
         /// </summary>
-        void DeleteInterpolationTab(InterpolationRecord record);
+        void DeleteCalibrationTab(CalibrationRecord record);
     }
 
-    public class InterpolationTabDAL: IInterpolationTabDAL
+    public class CalibrationTabDAL: ICalibrationTabDAL
     {
-        public InterpolationTabDAL()
+        public CalibrationTabDAL()
         {
             BusinessHelper.InitConnection();
         }
         /// <summary>
         /// Return all the persistent customers
         /// </summary>
-        public List<InterpolationRecord> GetInterpolationTab(long tankid)
+        public List<CalibrationRecord> GetCalibrationTab(long tankid)
         {
-            List<InterpolationRecord> collec = new List<InterpolationRecord>();
-            DataTable dt = BusinessHelper.LoadInterpolation((long)tankid);
+            List<CalibrationRecord> collec = new List<CalibrationRecord>();
+            DataTable dt = BusinessHelper.LoadCalibration((long)tankid);
             foreach (DataRow _row in dt.Rows)
             {
-                InterpolationRecord ir = new InterpolationRecord();
-                ir.PK = Convert.ToUInt64(_row["pk_id"]);
-                ir.TankId = Convert.ToInt64(_row["tankid"]);
-                ir.Level = Convert.ToDouble(_row["in_level"]);
-                ir.Capacity = Convert.ToDouble(_row["out_cap"]);
-
-                collec.Add(ir);
+                CalibrationRecord cr = new CalibrationRecord();
+                cr.PK = Convert.ToUInt64(_row["pk_id"]);
+                cr.TankId = Convert.ToInt64(_row["tankid"]);
+                cr.Raw = Convert.ToInt32(_row["raw"]);
+                cr.Level = Convert.ToInt32(_row["level"]);                               
+               
+                collec.Add(cr);
             }
 
             return collec;
 
         }
-        public void ImportInterpolationTab(String fileName,long tankid)
+        public void ImportCalibrationTab(String fileName,long tankid)
         {
             if (String.IsNullOrEmpty(fileName))
             {
@@ -77,9 +77,9 @@ namespace FLS.Business
 
                 range = worksheet.UsedRange;
                 DataTable dt = new DataTable();
-
+                dt.Columns.Add("Raw");
                 dt.Columns.Add("Level");
-                dt.Columns.Add("Capacity");
+                
 
                 for (row = 2; row <= range.Rows.Count; row++)
                 {
@@ -97,13 +97,13 @@ namespace FLS.Business
 
                 foreach (DataRow _row in dt.Rows)
                 {
-                    InterpolationRecord ir = new InterpolationRecord();
+                    CalibrationRecord cr = new CalibrationRecord();
                     //ir.PK = Convert.ToUInt64(_row["pk_id"]);
-                    ir.TankId = tankid;//Convert.ToInt64(_row["pumpid"]);
-                    ir.Level = Convert.ToDouble(_row["Level"]);
-                    ir.Capacity = Convert.ToDouble(_row["Capacity"]);
-
-                    UpdateInterpolationTab(ir);
+                    cr.TankId = tankid;//Convert.ToInt64(_row["pumpid"]);
+                    cr.Raw = Convert.ToInt32(_row["raw"]);
+                    cr.Level = Convert.ToInt32(_row["Level"]);
+                    
+                    UpdateCalibrationTab(cr);
                 }
 
             }
@@ -119,12 +119,12 @@ namespace FLS.Business
         /// <summary>
         /// Updates or adds the given customer
         /// </summary>
-        public void UpdateInterpolationTab(InterpolationRecord record)
+        public void UpdateCalibrationTab(CalibrationRecord record)
         {
             long pkid = (long)record.PK;
             try
             {
-                BusinessHelper.InserUpdateInterpolationTab(ref pkid, (long)record.TankId, record.Level, record.Capacity);
+                BusinessHelper.InserUpdateCalibrationTab(ref pkid, (long)record.TankId, record.Raw, record.Level);
                 if (pkid != -1)
                 {
                     record.PK = (UInt64)pkid;
@@ -142,12 +142,12 @@ namespace FLS.Business
         /// <summary>
         /// Delete the given customer
         /// </summary>
-        public void DeleteInterpolationTab(InterpolationRecord record)
+        public void DeleteCalibrationTab(CalibrationRecord record)
         {
             long pkid = (long)record.PK;
             try
             {
-                BusinessHelper.DeleteInterpolationTab(pkid);
+                BusinessHelper.DeleteCalibrationTab(pkid);
 
             }
             catch (Exception)

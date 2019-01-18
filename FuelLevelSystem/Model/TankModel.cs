@@ -13,7 +13,8 @@ namespace FuelLevelSystem.Model
         long _Id;
         string _Name;
         string _Desc;
-        string _KindofFuel;
+        long _FuelId;
+        
         string _StationName;
         Double _MaxCapacity;
         Double _Capacity;
@@ -25,15 +26,17 @@ namespace FuelLevelSystem.Model
         string _ThermoText;
         Double _Water;
         string _WaterText;
+        UInt64 _PumpTotal;
         
         public TankModel()
         {
             _Name = string.Empty;
             _Desc = string.Empty;
-            _KindofFuel = string.Empty;
+            
             _MaxCapacity = 1000;
             _Capacity = 0;
             _Thermo = 0;
+            _PumpTotal = 0;
         }
         public long TankId
         {
@@ -50,11 +53,12 @@ namespace FuelLevelSystem.Model
             get { return _Desc; }
             set { _Desc = value; RaisePropertyChanged("TankDescription"); }
         }
-        public string KindOfFuel
+        public long FuelId
         {
-            get { return _KindofFuel; }
-            set { _KindofFuel = value; RaisePropertyChanged("TankKindofFuel"); }
+            get { return _FuelId; }
+            set { _FuelId = value; RaisePropertyChanged("TankFuelId"); }
         }
+        public UInt64 StationId { get; set; }
         public string StationName
         {
             get { return _StationName; }
@@ -126,7 +130,13 @@ namespace FuelLevelSystem.Model
             get { return _WLevelText; }
             set { _WLevelText = value; RaisePropertyChanged("TankWaterLevelText"); }
         }
-        
+
+        public UInt64 TankPumpTotal
+        {
+            get { return _PumpTotal; }
+            set { _PumpTotal = value; RaisePropertyChanged("TankPumpTotal"); }
+        }
+
         public ICommand SavedDataCommand { get; set; }
         public ICommand FuelImportCommand { get; set; }
         public ICommand DetailCommand { get; set; }
@@ -134,7 +144,7 @@ namespace FuelLevelSystem.Model
         private bool _IsImportFinish;
         private bool _HasData;
 
-        public bool IsImportFinish
+        public bool IsImportFinished
         {
             get
             {
@@ -145,7 +155,7 @@ namespace FuelLevelSystem.Model
                 if (value != _IsImportFinish)
                 {
                     _IsImportFinish = value;
-                    RaisePropertyChanged("IsImportFinish");
+                    RaisePropertyChanged("IsImportFinished");
                 }
             }
         }

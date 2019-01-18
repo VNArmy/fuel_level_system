@@ -1,0 +1,84 @@
+﻿<Window x:Class="FuelLevelSystem.View.ImportTicketWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        
+        Title="ImportTicket" Height="480" Width="640">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="2*"/>
+            <!--<RowDefinition Height="15*"/>-->
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" >BIÊN BẢN GIAO NHẬN No. <TextBlock Text="{Binding ImportTicketData.TicketId,Mode=TwoWay}"/>
+        </TextBlock>
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="5">THÔNG TIN BỒN</TextBlock>
+            <TextBlock Grid.Row="1" Margin="5">Loại nhiên liệu: <TextBlock Text="{Binding Fuel}"/></TextBlock>
+            <TextBlock Grid.Row="2" Margin="5">Số Total: <TextBlock Text="{Binding ImportTicketData.PumpTotal}"/></TextBlock>
+            <TextBlock Grid.Row="3" Margin="5">Số đo bồn: <TextBlock Text="{Binding ImportTicketData.TankLevel}"/></TextBlock>
+            <TextBlock Grid.Row="4" Margin="5">Lượng hàng: <TextBlock Text="{Binding ImportTicketData.TankCapacity}"/> </TextBlock>
+        </Grid>
+        <Grid Grid.Row="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="35*"/>
+                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="35*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5" >Tên lái xe:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.DriverName}"/>
+            <TextBlock Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">Số xe:</TextBlock>
+            <TextBox Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.CarPlate}"/>
+            <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">Người nhận:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.StaffName}"/>
+            <TextBlock Grid.Column="2" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">Chức vụ:</TextBlock>
+            <TextBox Grid.Column="3" Grid.Row="1"  VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.StaffPos}"/>
+            <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">Số niêm chai mẫu:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="2"  VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.TemplateBottleId}"/>
+            <TextBlock Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">Số lượng hàng:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="3"  VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.ImportCapacity}"/>
+            <TextBlock Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5">Kho xuất hàng:</TextBlock>
+            <TextBox Grid.Column="1" Grid.Row="4"  VerticalAlignment="Center" Margin="3" Text="{Binding ImportTicketData.ExStore}"/>
+            <TextBlock Grid.Column="2" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,6,0,5" Grid.ColumnSpan="2" Width="127">Số niêm chai mẫu KXH:</TextBlock>
+            <TextBox Grid.Column="3" Grid.Row="4"  VerticalAlignment="Center" Margin="51,0,3,3" Text="{Binding ImportTicketData.SealId}"/>
+            <Label Margin="10"  Grid.Column="0" Grid.Row="5" FontWeight="Bold" Grid.RowSpan="3">TT niêm phong:</Label>
+            <StackPanel Margin="5"  Grid.Column="1" Grid.Row="5" Grid.RowSpan="3" Grid.ColumnSpan="2">
+                <RadioButton Margin="5" GroupName="seal" IsChecked="{Binding Path=YesIsCheck,Mode=OneWayToSource}">Có</RadioButton>
+                <RadioButton Margin="5" GroupName="seal" IsChecked="{Binding Path=NoIsCheck,Mode=OneWayToSource}">Không</RadioButton>
+            </StackPanel>
+
+        </Grid>
+        <Button Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left" Margin="121,39,0,0" Grid.Row="3" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Clear" Command="{Binding ClearCommand}"  HorizontalAlignment="Left" Margin="422,39,0,0" Grid.Row="3" VerticalAlignment="Top" Width="75"/>
+        <!--<Grid Grid.Row="4">
+            <Grid.Resources>
+                <model:ImportTicketModel x:Key="importTicket" />                                    
+            </Grid.Resources>
+            <controls:ReportViewerUserControl 
+            DataSource= "{StaticResource importTicket}"
+            EmbeddedReport="FuelLevelSystem.Reports.ImportTicketReport.rdlc"
+            />
+        </Grid>-->
+    </Grid>
+</Window>

@@ -11,25 +11,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace FuelSupervisorSetting.View
 {
     /// <summary>
-    /// Interaction logic for Interpolation.xaml
+    /// Interaction logic for Calibration.xaml
     /// </summary>
-    public partial class Interpolation : UserControl
+    public partial class Calibration : UserControl
     {
-        //private ViewModel.ViewModelInterpolation m_ViewModel;
-        public Interpolation()
+        public Calibration()
         {
             InitializeComponent();
-            //this.DataContext = new ViewModel.ViewModelInterpolation();
-            //m_ViewModel = new ViewModel.ViewModelInterpolation();
-            //this.DataContext = m_ViewModel;
         }
-
         private void btnImport_Click(object sender, RoutedEventArgs e)
         {
 
@@ -43,11 +37,11 @@ namespace FuelSupervisorSetting.View
 
                 if (browsefile == true)
                 {
-                    
+
                     ((ObjectDataProvider)this.FindResource("ImportIntoTab")).MethodParameters[1] = openfile.FileName;
-                    //((ObjectDataProvider)this.FindResource("InterpolationTab")).Refresh();
+                    //((ObjectDataProvider)this.FindResource("CalibrationTab")).Refresh();
                     ((ObjectDataProvider)this.FindResource("ImportIntoTab")).MethodParameters[1] = String.Empty;
-                    ((ObjectDataProvider)this.FindResource("LoadInterpolationTab")).Refresh();
+                    ((ObjectDataProvider)this.FindResource("LoadCalibrationTab")).Refresh();
                 }
             }
             catch (Exception ex)
@@ -55,48 +49,24 @@ namespace FuelSupervisorSetting.View
                 App.Log.LogException(ex);
                 throw;
             }
-            
+
         }
 
- 
+
 
         private void cbSelTank_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox cb = (sender) as ComboBox;
-            if (cb.SelectedValue!=null)
+            if (cb.SelectedValue != null)
             {
                 if (!this.btnImport.IsEnabled) this.btnImport.IsEnabled = true;
-                
+
             }
             else
             {
                 if (this.btnImport.IsEnabled) this.btnImport.IsEnabled = false;
             }
-            
+
         }
-
-       
-
-        //private void txtFileName_TargetUpdated(object sender, DataTransferEventArgs e)
-        //{
-        //    this.txtFileName.Text = String.Empty;
-        //}
-
-        //private void InterpolationGrid_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        //{
-        //    this.DataContext = m_ViewModel;
-        //}
-
-        //private void InterpolationGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (InterpolationGrid.SelectedItem == null)
-        //    {
-        //        IDColumn.IsReadOnly = true;
-        //    }
-        //    else
-        //    {
-        //        IDColumn.IsReadOnly = !InterpolationGrid.SelectedItem.Equals(CollectionView.NewItemPlaceholder);
-        //    }
-        //}
     }
 }

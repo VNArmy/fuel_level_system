@@ -60,6 +60,11 @@ namespace FuelSupervisorSetting.View
             Stage.Child = new Interpolation();
 
         }
+        private void MenuItem_Click2e(object sender, RoutedEventArgs e)
+        {
+            Stage.Child = new Calibration();
+
+        }
         protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
         {
 

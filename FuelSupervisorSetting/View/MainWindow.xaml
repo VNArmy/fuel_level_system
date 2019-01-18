@@ -19,6 +19,7 @@
                 <MenuItem Header="Danh mục bồn" Click="MenuItem_Click2b"/>
                 <MenuItem Header="Danh mục bơm" Click="MenuItem_Click" />
                 <MenuItem Header="Barem" Click="MenuItem_Click2c"/>
+                <MenuItem Header="Calib" Click="MenuItem_Click2e"/>
                 <MenuItem Header="Mqtt Server" Click="MenuItem_Click2d" />
                 
             </MenuItem>

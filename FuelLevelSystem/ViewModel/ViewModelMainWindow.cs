@@ -29,6 +29,9 @@ namespace FuelLevelSystem.ViewModel
         private UInt16 _HostPort;
         private string _MqttUser;
         private string _MqttPwd;
+
+        private System.Timers.Timer demoTimer;
+
         public RelayCommand<UInt64> LoadStationTanks { get; set; }
 
         public RelayCommand<UInt64> SaveDataCommand { get; set; }
@@ -36,6 +39,7 @@ namespace FuelLevelSystem.ViewModel
         public RelayCommand<UInt64> FuelImportCommand { get; set; }
         public RelayCommand<UInt64> FinishCommand { get; set; }
 
+        public RelayCommand StationStatCommand { get; set; }
                    
 
         //public AuthenticationViewModel AuthVM { get; set; }
@@ -59,6 +63,8 @@ namespace FuelLevelSystem.ViewModel
         //    get { return _CollecPump; }
         //    set { SetProperty(ref _CollecPump, value,"CollecPump"); }
         //}
+
+        public static MqttClient ClientPub{get;set;}
         public ViewModelMainWindow()
         {
             try
@@ -67,14 +73,23 @@ namespace FuelLevelSystem.ViewModel
 
                 //LoginCommand = new RelayCommand(DoLogin);
                 BusinessHelper.InitConnection();
+                MqttClientInit();
 
                 LoadStationTanks = new RelayCommand<UInt64>(getCurrentTankList);
                 SaveDataCommand = new RelayCommand<UInt64>(DoSaveData, CanSaveData);
                 DetailCommand = new RelayCommand<UInt64>(DoTankDetails);
                 FuelImportCommand = new RelayCommand<UInt64>(DoFuelImport, CanFuelImport);
                 FinishCommand = new RelayCommand<UInt64>(DoImportFinish, CanFinishImport);
+                StationStatCommand = new RelayCommand(DoStationStat);
                 CollecStation = getAllStation();
-                MqttClientInit();
+                
+
+                if (App.Demo == 1)
+                {
+                    demoTimer = new System.Timers.Timer(5000);
+                    demoTimer.Elapsed += demoTimer_Elapsed;
+                    demoTimer.Start();
+                }
             }
             catch (Exception ex)
             {
@@ -84,10 +99,50 @@ namespace FuelLevelSystem.ViewModel
             
             
         }
-        //private void DoLogin()
-        //{
-        //    AuthVM.Authenticate();
-        //}
+
+        void demoTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            TankModel t = new TankModel();            
+                
+            t.TankId = 1;
+            t.FuelLevel = 100;
+            t.Capacity = 10000;
+            t.WaterLevel = 10;
+            t.WaterCapacity = 100;
+            t.Thermometer = 25;
+            t.HasData = false;        
+            
+
+            foreach (var _tank in CollecTank)
+            {
+                if (_tank.TankId == t.TankId)
+                {
+                    _tank.FuelLevel = t.FuelLevel;
+                    _tank.Capacity = t.Capacity;
+                    _tank.WaterLevel = t.WaterLevel;
+                    _tank.WaterCapacity = t.WaterCapacity;
+                    _tank.Thermometer = t.Thermometer;
+                    if (!_tank.HasData)
+                    {
+                        _tank.HasData = true;
+                    }
+                    
+                    break;
+                }
+            }
+
+            ObservableCollection<Model.TankModel> _FuelTanks = new ObservableCollection<Model.TankModel>(CollecTank);
+            if (CollecTank != null)
+            {
+
+                CollecTank = null;
+
+            }
+
+            CollecTank = _FuelTanks;                                                
+            
+        }
+        
 
         private ObservableCollection<FuelStation> getAllStation()
         {
@@ -146,6 +201,10 @@ namespace FuelLevelSystem.ViewModel
         }
         private bool CanSaveData(UInt64 tankId)
         {
+            if (CollecTank == null)
+            {
+                return false;
+            }
             var selTank = (from _tank in CollecTank
                            where _tank.TankId == (long) tankId
                            select _tank).FirstOrDefault() as TankModel;
@@ -153,7 +212,7 @@ namespace FuelLevelSystem.ViewModel
             {
                 return false;
             }
-            return (selTank.IsImportFinish && selTank.HasData);
+            return (selTank.IsImportFinished & selTank.HasData);
         }
         private void DoFuelImport(UInt64 tankId)
         {
@@ -164,8 +223,40 @@ namespace FuelLevelSystem.ViewModel
 
             try
             {
-                BusinessHelper.SaveTankData(selTank.TankId, selTank.Capacity,selTank.Thermometer,selTank.WaterCapacity, (Byte)SaveDataStatus.IMPORT, _now);
-                selTank.IsImportFinish = false;
+
+                
+                if (App.Demo != 1)
+                {
+                    BusinessHelper.SaveTankData(selTank.TankId, selTank.Capacity, selTank.Thermometer, selTank.WaterCapacity, (Byte)SaveDataStatus.IMPORT, _now);
+
+                }
+                
+                String _pubTopic = String.Format(@"importbegin");
+                String _pubData = String.Format(@"{{""tankId"": {0} }}", tankId);
+                if ((ClientPub != null) && (!ClientPub.IsConnected))
+                {
+                    string pubClientId = Guid.NewGuid().ToString();
+
+
+                    ClientPub.Connect(pubClientId, _MqttUser, _MqttPwd);
+
+                }
+                ClientPub.Publish(_pubTopic, Encoding.UTF8.GetBytes(_pubData), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
+
+                App.Log.LogDebugMessage("Topic: " + _pubTopic + "\t Data:" + _pubData);
+
+                selTank.IsImportFinished = false;
+
+                ImportTicketWindow importTicketWnd = new ImportTicketWindow();
+                ViewModelImportTicket vmImportTicket = new ViewModelImportTicket(selTank);
+                importTicketWnd.DataContext = vmImportTicket;
+                if (vmImportTicket.CloseAction == null)
+                    vmImportTicket.CloseAction = new Action(() => importTicketWnd.Close());
+
+                //tdWnd.dgTankDetail.DataContext = vmTankDetail.CurrentTankDetails;
+                importTicketWnd.WindowState = WindowState.Maximized;
+                importTicketWnd.ShowDialog();   
+
 
             }
             catch (Exception ex)
@@ -175,14 +266,20 @@ namespace FuelLevelSystem.ViewModel
         }
         private bool CanFuelImport(UInt64 tankId)
         {
+            if (CollecTank == null)
+            {
+                return false;
+            }
             var selTank = (from _tank in CollecTank
                            where _tank.TankId == (long)tankId
                            select _tank).FirstOrDefault() as TankModel;
             if (selTank == null)
             {
-                return true;
+                return false;
             }
-            return selTank.IsImportFinish;
+            if (!selTank.HasData) return false;
+            
+            return selTank.IsImportFinished ;
         }
 
         private void DoImportFinish(UInt64 tankId)
@@ -194,14 +291,102 @@ namespace FuelLevelSystem.ViewModel
 
             try
             {
-                BusinessHelper.SaveTankData(selTank.TankId, selTank.Capacity,selTank.Thermometer,selTank.WaterCapacity, (Byte)SaveDataStatus.SAVE, _now);
-                selTank.IsImportFinish = true;
-                DataTable dt = BusinessHelper.GetTankList(selTank.TankId);
-                foreach (DataRow _dr in dt.Rows)
+                if (App.Demo != 1)
                 {
-                    long tankid = Convert.ToInt64(_dr["tankid"]);
-                    BusinessHelper.UpdateTankStatus(tankid);
+                    if (MessageBox.Show(String.Format(@"Kết thúc nhập bồn {0}", selTank.Description), @"Nhập nhiên liệu",MessageBoxButton.OKCancel,MessageBoxImage.Question) == MessageBoxResult.Cancel){
+                        return;
+                    }
+                    BusinessHelper.SaveTankData(selTank.TankId, selTank.Capacity, selTank.Thermometer, selTank.WaterCapacity, (Byte)SaveDataStatus.SAVE, _now);
+
+                    DataTable dt = BusinessHelper.GetTankList(selTank.TankId);
+                    foreach (DataRow _dr in dt.Rows)
+                    {
+                        long tankid = Convert.ToInt64(_dr["tankid"]);
+                        //BusinessHelper.UpdateTankStatus(tankid);
+                        BusinessHelper.UpdatePumpStatus(tankid);
+                    }
                 }
+                
+
+                DataTable _dtReport = BusinessHelper.FindLastTicketByTankId(selTank.TankId);
+                ImportReport _importReport = new ImportReport();
+                long _ticketId = -1;
+                long _tankId = -1;
+                if (_dtReport != null)
+                {
+                    DataRow _dr = _dtReport.Rows[0];
+                    _ticketId = Convert.ToInt64(_dr["ticket_id"]);
+                    _tankId = Convert.ToInt64(_dr["tank_id"]);
+                    _importReport.StationName = selTank.StationName;
+                    _importReport.ReportDate = Convert.ToDateTime( _dr["ticketdate"]);
+                    _importReport.DriverName = Convert.ToString(_dr["drivername"]);
+                    _importReport.CarPlate = Convert.ToString(_dr["carplate"]);
+                    _importReport.StaffName = Convert.ToString(_dr["staffname"]);
+                    _importReport.StaffPos = Convert.ToString(_dr["staffpos"]);
+                    _importReport.TemplateBottle = Convert.ToString(_dr["templatebottle"]);
+                    _importReport.ImportCapacity = Convert.ToDouble(_dr["importcapacity"]);
+                    long fuelId = Convert.ToInt64(_dr["fuel_id"]);
+                    _importReport.Fuel = BusinessHelper.FindFuelById(fuelId);
+                   
+                    _importReport.BeginCapacity = Convert.ToDouble(_dr["capacity"]);
+                    _importReport.BeginLevel = Convert.ToDouble(_dr["level"]);
+                    _importReport.BeginTotalPump = Convert.ToUInt64(_dr["pumptotal"]);
+                    _importReport.ExStore = Convert.ToString(_dr["exstore"]);
+                    _importReport.SealId = Convert.ToString(_dr["sealid"]);
+                    _importReport.SealStatus = Convert.ToBoolean(_dr["sealstatus"]);
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show(@"Phiếu không tồn tại!!!", @"Kết thúc nhập bồn", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    return;
+                    
+                }
+                _importReport.EndTotalPump = BusinessHelper.FindPumpTotalByTankId(selTank.TankId);
+                _importReport.EndCapacity = selTank.Capacity;
+                _importReport.EndLevel = selTank.FuelLevel;
+                _importReport.RealCapacity = _importReport.EndCapacity - _importReport.BeginCapacity;
+
+                if(!BusinessHelper.UpdateImportTicket(_ticketId, _importReport.EndTotalPump, _importReport.EndCapacity, _importReport.EndLevel))
+                {
+                    App.Log.LogInfoMessage(String.Format("Update ticket {0} failed",_ticketId));
+                    System.Windows.MessageBox.Show(@"Lỗi trong quá trình cập nhật phiếu!!!", @"Kết thúc nhập bồn", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                    return;
+                }
+                else
+	            {
+                    String _pubTopic = String.Format(@"importticket/{0}", _tankId);
+                    String _pubData = String.Format(@"{{""ticketId"": {0} }}", _ticketId);
+                    if ((ClientPub != null) && (!ClientPub.IsConnected))
+                    {
+                        string pubClientId = Guid.NewGuid().ToString();
+
+                       
+                        ClientPub.Connect(pubClientId, _MqttUser, _MqttPwd);
+                        
+                    }
+                    ClientPub.Publish(_pubTopic, Encoding.UTF8.GetBytes(_pubData), MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE,false);
+                    
+                    selTank.IsImportFinished = true;
+                    
+                    App.Log.LogDebugMessage("Topic: " + _pubTopic + "\t Data:" + _pubData);
+	            }
+                
+                
+               
+                ImportReportWindow importReportWnd = new ImportReportWindow();
+                ViewModelImportReport vmImportReport;
+                if (App.Demo == 1)
+                {
+                    vmImportReport = new ViewModelImportReport();
+                }
+                else
+                {
+                    vmImportReport = new ViewModelImportReport(_importReport);
+                }
+                
+                
+                importReportWnd.DataContext = vmImportReport;
+                importReportWnd.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -221,7 +406,11 @@ namespace FuelLevelSystem.ViewModel
                 {
                     return false;
                 }
-                return (!selTank.IsImportFinish);
+                if (!selTank.HasData)
+                {
+                    return false;
+                }
+                return (!selTank.IsImportFinished);
             }
             catch (Exception ex)
             {
@@ -274,6 +463,30 @@ namespace FuelLevelSystem.ViewModel
             //_stationid = (Int64)stationid;
         }
 
+        private void DoStationStat(object ignore)
+        {
+            try
+            {
+
+                List<TankModel> tankList = new List<TankModel>(this._CollecTank);
+                foreach (var tank in tankList)
+                {
+                    tank.TankPumpTotal = BusinessHelper.FindPumpTotalByTankId(tank.TankId);
+                    
+                }
+                ViewModelStationStat vmStationStat = new ViewModelStationStat(tankList,ClientPub);
+                StationStatWindow stationStatWnd = new StationStatWindow();
+                stationStatWnd.DataContext = vmStationStat;
+                stationStatWnd.WindowState = WindowState.Maximized;
+                stationStatWnd.Show();
+            }
+            catch (Exception ex)
+            {
+                App.Log.LogException(ex);
+            }
+
+        }
+
         public ObservableCollection<Model.TankModel> getTankList(long stationid)
         {
             DataTable table = BusinessHelper.ListAllTank(stationid);
@@ -286,18 +499,21 @@ namespace FuelLevelSystem.ViewModel
                     foreach (DataRow _datarow in table.Rows)
                     {
                         TankModel _tm = new TankModel();
+                        
                         _tm.TankId = Convert.ToInt64(_datarow["tankid"]);
                         _tm.Name = _datarow["tankname"].ToString();
                         _tm.Description = _datarow["tankdesc"].ToString();
+                        _tm.StationId = (UInt64)stationid;
                         _tm.StationName = _datarow["stationname"].ToString();
                         _tm.MaxCapacity = Convert.ToDouble(_datarow["capacity"]);
                         _tm.OffsetLevel = Convert.ToDouble(_datarow["offset"]);
+                        _tm.FuelId = Convert.ToInt64(_datarow["fuelid"]);
                         _tm.Capacity = 0;
                         _tm.FuelLevel = 0;
                         _tm.WaterLevel = 0;
                         _tm.Thermometer = 25.00;
                         _tm.WaterCapacity = 0;
-                        _tm.IsImportFinish = true;
+                        _tm.IsImportFinished = true;
                         _tm.HasData = false;
                         _tm.SavedDataCommand = this.SaveDataCommand;
                         _tm.DetailCommand = this.DetailCommand;
@@ -339,11 +555,19 @@ namespace FuelLevelSystem.ViewModel
                 }
                 App.Log.LogInfoMessage(string.Format (@"Host: {0}, Port: {1}, User: {2}",_HostMqtt,_HostPort,_MqttUser));
                 clientSub = new MqttClient(_HostMqtt, _HostPort, false, null, null, MqttSslProtocols.None);
+                ClientPub = new MqttClient(_HostMqtt, _HostPort, false, null, null, MqttSslProtocols.None);
+                
                 clientSub.MqttMsgPublishReceived += clientSub_MqttMsgPublishReceived;
 
-                string clientId = Guid.NewGuid().ToString();
+                string subClientId = Guid.NewGuid().ToString();
+                string pubClientId = Guid.NewGuid().ToString();
 
-                clientSub.Connect(clientId, _MqttUser, _MqttPwd);
+                clientSub.Connect(subClientId, _MqttUser, _MqttPwd);
+                ClientPub.Connect(pubClientId, _MqttUser, _MqttPwd);
+
+                String s = @"{""status"":0}";
+                ClientPub.Publish("status", Encoding.UTF8.GetBytes(s));
+
             }
             catch (Exception ex)
             {
@@ -360,6 +584,10 @@ namespace FuelLevelSystem.ViewModel
                 if ((clientSub != null) && (clientSub.IsConnected))
                 {
                     clientSub.Disconnect();
+                }
+                if ((ClientPub != null) && (ClientPub.IsConnected))
+                {
+                    ClientPub.Disconnect();
                 }
             }
             catch (Exception ex)
@@ -388,7 +616,7 @@ namespace FuelLevelSystem.ViewModel
             }
             
         }
-        public void SubscribeTank(long stationid,long tankid)
+        private void SubscribeTank(long stationid,long tankid)
         {
             try
             {
@@ -407,7 +635,7 @@ namespace FuelLevelSystem.ViewModel
             }
 
         }
-        private void clientSub_MqttMsgPublishReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishEventArgs e)
+        private void clientSub_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             try
             {
@@ -436,6 +664,21 @@ namespace FuelLevelSystem.ViewModel
                         if (!_tank.HasData)
                         {
                             _tank.HasData = true;
+                            DataTable _dtTicket = BusinessHelper.FindLastTicketByTankId(_tank.TankId);
+                            if (_dtTicket != null)
+                            {
+                                DataRow _dr = _dtTicket.Rows[0];
+                                Double _endcapacity = Convert.ToDouble(_dr["endcapacity"]);
+                                Double _endlevel = Convert.ToDouble(_dr["endlevel"]);
+                                App.Log.LogDebugMessage(String.Format(@"Cap-Level: {0}-{1}", _endcapacity, _endlevel));
+                                if ((_endcapacity == 0) && (_endlevel == 0))
+                                {
+                                    _tank.IsImportFinished = false;
+                                    App.Log.LogDebugMessage(String.Format(@"Tank {0} doesn't finish importing!!!", _tank.TankId));
+                                }
+                                
+                            }
+                            
                         }
                         App.Log.LogDebugMessage (String.Format (_tank.CapacityText));
                         App.Log.LogDebugMessage(String.Format(_tank.WaterCapacityText));
@@ -451,16 +694,7 @@ namespace FuelLevelSystem.ViewModel
                     
                 }
 
-                CollecTank = _FuelTanks;
-
-                //var recvTank = (from _tank in CollecTank
-                //                where _tank.TankId == recvTankId
-                //                select _tank).FirstOrDefault() as FuelTank;
-                //Console.WriteLine(@"Fuel: {0}; Water: {1}, Thermo: {2}", _level, _wlevel, _thermo);
-
-                //recvTank.Capacity = FuelInterpolation((Double)_level);
-
-                //recvTank.Thermometer = (Double)_thermo / 100;
+                CollecTank = _FuelTanks;                
 
                 
             }

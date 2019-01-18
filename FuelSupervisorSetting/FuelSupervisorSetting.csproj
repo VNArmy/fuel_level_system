@@ -71,6 +71,8 @@
     <Compile Include="Model\PasswordBoxConverter.cs" />
     <Compile Include="Model\SelValueConverter.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />
+    <Compile Include="ViewModel\CalibrationTabDataProvider.cs" />
+    <Compile Include="ViewModel\CalibrationTabUIObjects.cs" />
     <Compile Include="ViewModel\PumpListDataProvider.cs" />
     <Compile Include="ViewModel\PumpListUIObjects.cs" />
     <Compile Include="ViewModel\MqttServerViewModel.cs" />
@@ -84,6 +86,9 @@
     <Compile Include="ViewModel\MultiInt64Converter.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ViewModel\ViewModelTankList.cs" />
+    <Compile Include="View\Calibration.xaml.cs">
+      <DependentUpon>Calibration.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Interpolation.xaml.cs">
       <DependentUpon>Interpolation.xaml</DependentUpon>
     </Compile>
@@ -102,6 +107,10 @@
     <Compile Include="View\UserControl1.xaml.cs">
       <DependentUpon>UserControl1.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\Calibration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Interpolation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

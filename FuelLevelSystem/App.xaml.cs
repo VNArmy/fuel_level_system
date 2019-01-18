@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace FuelLevelSystem
 {
@@ -16,6 +17,7 @@ namespace FuelLevelSystem
     public partial class App : Application
     {
         public static  FuelLevelSystem.Logger.Logger Log ;
+        public static int Demo = 0;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -32,6 +34,11 @@ namespace FuelLevelSystem
             //IView loginWindow = new LoginWindow(viewModel);
             //loginWindow.ShowDialog();
         }
-        
+        private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            Log.LogException(e.Exception);
+            MessageBox.Show(e.Exception.Message);
+            
+        }
     }
 }

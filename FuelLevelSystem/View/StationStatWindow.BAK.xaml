@@ -1,0 +1,13 @@
+﻿<Window x:Class="FuelLevelSystem.View.StationStatWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:FuelLevelSystem.View.UserControls"
+        xmlns:model="clr-namespace:FuelLevelSystem.Model"
+        Title="StationStatWindow" MinHeight="640" MinWidth="480">
+    <Grid>
+        <controls:ReportViewerUserControl 
+            DataSource= "{Binding StatData}"
+            EmbeddedReport="FuelLevelSystem.Reports.StationStatReport.rdlc"
+            />
+    </Grid>
+</Window>

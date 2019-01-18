@@ -50,6 +50,7 @@
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Windows.Shell, Version=3.5.41019.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -57,6 +58,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -74,6 +76,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files (x86)\WPF Toolkit\v3.5.50211.1\WPFToolkit.dll</HintPath>
@@ -89,16 +92,26 @@
     </Compile>
     <Compile Include="Model\AnonymousIdentity.cs" />
     <Compile Include="Model\AuthentationService.cs" />
+    <Compile Include="Model\FuelStat.cs" />
+    <Compile Include="Model\FuelStatRecord.cs" />
+    <Compile Include="Model\ImportReport.cs" />
+    <Compile Include="Model\ImportTicketModel.cs" />
     <Compile Include="Model\CustomIdentity.cs" />
     <Compile Include="Model\CustomPrincipal.cs" />
     <Compile Include="Model\PumpModel.cs" />
     <Compile Include="Model\ResultRecord.cs" />
+    <Compile Include="Model\StationStat.cs" />
     <Compile Include="Model\TankDetails.cs" />
     <Compile Include="Model\TankModel.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="ViewModel\AuthenticationViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelImportReport.cs" />
+    <Compile Include="ViewModel\ViewModelImportTicket.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ViewModel\ViewModelStationStat.cs" />
+    <Compile Include="ViewModel\ViewModelStationStatReport.cs" />
     <Compile Include="ViewModel\ViewModelTankDetails.cs" />
     <Compile Include="View\DateTimePicker.xaml.cs">
       <DependentUpon>DateTimePicker.xaml</DependentUpon>
@@ -112,11 +125,23 @@
     <Compile Include="View\FuelPumpControl.xaml.cs">
       <DependentUpon>FuelPumpControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\LoginWindow.xaml.cs">
-      <DependentUpon>LoginWindow.xaml</DependentUpon>
+    <Compile Include="View\ImportReportWindow.xaml.cs">
+      <DependentUpon>ImportReportWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ImportTicketWindow.xaml.cs">
+      <DependentUpon>ImportTicketWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\StationStatReportWindow.xaml.cs">
+      <DependentUpon>StationStatReportWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\StationStatWindow.xaml.cs">
+      <DependentUpon>StationStatWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TankDetail.xaml.cs">
       <DependentUpon>TankDetail.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\UserControls\ReportViewerUserControl.xaml.cs">
+      <DependentUpon>ReportViewerUserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="View\DateTimePicker.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -134,9 +159,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\LoginWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="View\ImportReportWindow.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ImportTicketWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -153,7 +182,19 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\StationStatReportWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\StationStatWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\TankDetail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\UserControls\ReportViewerUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,11 +218,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Reports\ImportReport.rdlc" />
+    <EmbeddedResource Include="Reports\StationStatReport.rdlc" />
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
     <Resource Include="Fonts\Ni7seg.ttf" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\FuelLevelSystem.Model.FuelStation.datasource" />
+    <None Include="Properties\DataSources\FuelLevelSystem.Model.FuelStatRecord.datasource" />
+    <None Include="Properties\DataSources\FuelLevelSystem.Model.ImportReport.datasource" />
+    <None Include="Properties\DataSources\FuelLevelSystem.Model.ImportTicketModel.datasource" />
+    <None Include="Properties\DataSources\FuelLevelSystem.Model.StationStat.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -223,6 +271,7 @@
   <ItemGroup>
     <Resource Include="View\Img\fuel_pump.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

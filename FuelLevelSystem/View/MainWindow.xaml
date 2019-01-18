@@ -45,6 +45,11 @@
                     <RowDefinition/>
                     <!--<RowDefinition/>-->
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition/>
+                    <!--<RowDefinition/>-->
+                </Grid.ColumnDefinitions>
                 <ItemsControl ItemsSource="{Binding CollecTank}" BorderBrush="Blue" BorderThickness="5,5,10,5" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -69,13 +74,12 @@
                                 SaveCmd="{Binding SavedDataCommand}"
                                 DetailCmd="{Binding DetailCommand}"
                                 FinishCmd="{Binding FinishCommand}"
-                                ImportCmd="{Binding FuelImportCommand}"                                                    
-                                
+                                ImportCmd="{Binding FuelImportCommand}"                                                                                    
                                 />
-
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+                <Button Grid.Column="1" Height="25" Margin="10,10,10,10" VerticalAlignment="Top" Command="{Binding StationStatCommand}">Thống kê</Button>
                 <!--<ItemsControl Grid.Row="1" ItemsSource="{Binding CollecPump}" BorderBrush="Blue" BorderThickness="5,5,10,5" >
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>

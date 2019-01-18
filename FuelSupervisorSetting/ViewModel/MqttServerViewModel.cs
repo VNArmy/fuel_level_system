@@ -17,7 +17,7 @@ namespace FuelSupervisorSetting.ViewModel
         int _serverport;
         string _userid;
         string _status;
-        string _confirmpwd;
+        //string _confirmpwd;
 
         public MqttServerViewModel()
         {
